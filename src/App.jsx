@@ -1,44 +1,44 @@
 import Kalkulator from "./Kalkulator.jsx";
-import Profil from "./Profil.jsx";
-
-const user = {
-  nama: "Siswa Rajin",
-  pekerjaan: "React Developer",
-  email: "siswa@gmail.com",
-};
+import UserCard from "./UserCard.jsx";
+import { useState, useEffect } from "react";
 
 const App = () => {
+  const [users, setUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const respon = await fetch(
+          "https://jsonplaceholder.typicode.com/users"
+        );
+        const data = await respon.json();
+        setUsers(data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Gagal Mengambil Data", error);
+        setIsLoading(false);
+      }
+    };
+    fetchUsers();
+  }, []);
   return (
     <div>
-      <div className="salam">
-        <h1>Halo,Dunia React!</h1>
-        <h2>Perkenalkan</h2>
-      </div>
-
-      <div className="bungkus">
-        <Profil
-          nama={user.nama}
-          pekerjaan={user.pekerjaan}
-          email={user.email}
-        />
-      </div>
-
-      <div className="bungkus">
-        <Profil
-          nama="Siti Aminah"
-          pekerjaan="Backend Developer"
-          email="siti@email.com"
-        />
-      </div>
-
-      <div className="bungkus">
-        <Profil
-          nama="Alex Wijaya"
-          pekerjaan="UI/UX Designer"
-          email="alex@email.com"
-        />
-      </div>
+      <h1>Daftar Pengguna</h1>
       <Kalkulator />
+      <div className="salam">
+        {isLoading ? (
+          <h2>Sedang Memuat Data....</h2>
+        ) : (
+          users.map((user) => (
+            <UserCard
+              key={user.id}
+              nama={user.name}
+              email={user.email}
+              kota={user.address.city}
+            />
+          ))
+        )}
+      </div>
     </div>
   );
 };
